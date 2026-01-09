@@ -67,7 +67,7 @@ export async function GET() {
 
       // Average the attendance rates
       const avgRate = memberRates.length > 0
-        ? memberRates.reduce((sum, rate) => sum + rate, 0) / memberRates.length
+        ? memberRates.reduce((sum: number, rate: number) => sum + rate, 0) / memberRates.length
         : 0
 
       return {

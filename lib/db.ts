@@ -40,6 +40,7 @@ export type Database = {
     findFirst: (args: { where: { name: { equals: string; mode: 'insensitive' } } }) => Promise<TeamMember | null>
     create: (args: { data: { name: string; email?: string } }) => Promise<TeamMember>
     update: (args: { where: { id: string }; data: Partial<Pick<TeamMember, 'name' | 'email' | 'teamId'>> }) => Promise<TeamMember | null>
+    delete: (args: { where: { id: string } }) => Promise<TeamMember>
     findMany: () => Promise<TeamMember[]>
   }
   attendanceRecord: {
@@ -121,6 +122,17 @@ export function getDatabase(): Database {
         },
         update: async (args) => {
           const result = await prisma.teamMember.update(args)
+          return {
+            id: result.id,
+            name: result.name,
+            email: result.email,
+            teamId: result.teamId,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          }
+        },
+        delete: async (args) => {
+          const result = await prisma.teamMember.delete(args)
           return {
             id: result.id,
             name: result.name,
