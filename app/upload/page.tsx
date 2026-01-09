@@ -6,12 +6,24 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6">
       <div className="max-w-lg mx-auto w-full">
-        <div className="mb-4">
+        <div className="mb-4 flex flex-wrap gap-2">
           <a
             href="/"
-            className="inline-block px-3 py-1.5 bg-gray-medium hover:bg-gray-light text-white text-sm font-semibold rounded transition-colors"
+            className="px-3 py-1.5 bg-gray-medium hover:bg-gray-light text-white text-sm font-semibold rounded transition-colors"
           >
             ← Home
+          </a>
+          <a
+            href="/todo"
+            className="px-3 py-1.5 bg-gray-medium hover:bg-gray-light text-white text-sm font-semibold rounded transition-colors"
+          >
+            Weekly Goals
+          </a>
+          <a
+            href="/management"
+            className="px-3 py-1.5 bg-gray-medium hover:bg-gray-light text-white text-sm font-semibold rounded transition-colors"
+          >
+            Management
           </a>
         </div>
         <div className="mb-6 sm:mb-8 text-center">
