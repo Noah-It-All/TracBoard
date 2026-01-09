@@ -57,10 +57,10 @@ export async function GET() {
       }
     })
 
-    const teamStats = teams.map(team => {
+    const teamStats = teams.map((team: any) => {
       // Calculate attendance rate for each team member
-      const memberRates = team.members.map(member => {
-        const presentCount = member.attendanceRecords.filter(r => r.isPresent).length
+      const memberRates = team.members.map((member: any) => {
+        const presentCount = member.attendanceRecords.filter((r: any) => r.isPresent).length
         const totalCount = member.attendanceRecords.length
         return totalCount > 0 ? (presentCount / totalCount) * 100 : 0
       })

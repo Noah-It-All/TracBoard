@@ -73,9 +73,10 @@ export type Database = {
     update: (args: { where: { id: string }; data: Partial<Pick<Team, 'name'>> }) => Promise<Team | null>
   }
   config: {
-    upsert: (args: { data: { key: string; value: string } }) => Promise<ConfigItem>
+    upsert: (args: { where: { key: string }; update: { value: string }; create: { key: string; value: string } }) => Promise<ConfigItem>
     findUnique: (args: { where: { key: string } }) => Promise<ConfigItem | null>
-    findMany: () => Promise<ConfigItem[]>
+    findMany: (args?: any) => Promise<ConfigItem[]>
+    delete: (args: { where: { key: string } }) => Promise<ConfigItem>
   }
 }
 
@@ -269,8 +270,8 @@ export function getDatabase(): Database {
             updatedAt: result.updatedAt,
           } : null
         },
-        findMany: async () => {
-          const results = await prisma.config.findMany()
+        findMany: async (args?: any) => {
+          const results = await prisma.config.findMany(args)
           return results.map((c: any) => ({
             id: c.id,
             key: c.key,
@@ -278,6 +279,16 @@ export function getDatabase(): Database {
             createdAt: c.createdAt,
             updatedAt: c.updatedAt,
           }))
+        },
+        delete: async (args) => {
+          const result = await prisma.config.delete(args)
+          return {
+            id: result.id,
+            key: result.key,
+            value: result.value,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          }
         },
       },
     } as Database
