@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 export const revalidate = 0
+export const prerender = false
 
 export async function POST(request: NextRequest) {
   try {

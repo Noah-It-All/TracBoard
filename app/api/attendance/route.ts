@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 export const revalidate = 0
+export const prerender = false
 
 function parseDateOnly(date: string) {
   const [year, month, day] = date.split('-').map(Number)

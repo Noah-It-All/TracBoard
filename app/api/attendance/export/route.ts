@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 export const revalidate = 0
+export const prerender = false
 
 function toCsv(records: Array<{ date: Date; isPresent: boolean; teamMemberId: string }>, membersById: Map<string, { name: string }>) {
   const header = 'date,member_id,member_name,is_present\n'
