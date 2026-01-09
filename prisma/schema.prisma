@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?  @unique
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  attendanceRecords AttendanceRecord[]
+  
+  @@index([name])
+  @@index([teamId])
+}
+
+model AttendanceRecord {
+  id           String     @id @default(cuid())
+  date         DateTime   @default(now())
+  isPresent    Boolean
+  teamMemberId String
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  imageUrl     String?    // URL to the uploaded whiteboard image
+  notes        String?    // Any additional notes from AI processing
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([teamMemberId, date], name: "teamMemberId_date")
+  @@index([date])
+  @@index([teamMemberId])
+}
+
+model Team {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  members   TeamMember[]
+}
+
+model Config {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
