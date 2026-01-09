@@ -55,6 +55,10 @@ export type Database = {
       where: { teamMemberId_date: { teamMemberId: string; date: Date } }
     }) => Promise<AttendanceRecord>
     findMany: (args?: {
+      where?: {
+        teamMemberId?: string
+        date?: { gte?: Date; lt?: Date }
+      }
       include?: { teamMember: boolean }
       orderBy?: { date: 'desc' | 'asc' }
       take?: number
@@ -127,7 +131,7 @@ export function getDatabase(): Database {
         },
         findMany: async () => {
           const results = await prisma.teamMember.findMany()
-          return results.map(m => ({
+          return results.map((m: any) => ({
             id: m.id,
             name: m.name,
             email: m.email,
@@ -176,7 +180,7 @@ export function getDatabase(): Database {
         },
         findMany: async (args) => {
           const results = await prisma.attendanceRecord.findMany(args)
-          return results.map(r => ({
+          return results.map((r: any) => ({
             id: r.id,
             date: r.date,
             isPresent: r.isPresent,
@@ -195,14 +199,14 @@ export function getDatabase(): Database {
               team: true,
             },
           })
-          return results.map(m => ({
+          return results.map((m: any) => ({
             id: m.id,
             name: m.name,
             email: m.email,
             teamId: m.teamId,
             createdAt: m.createdAt,
             updatedAt: m.updatedAt,
-            attendanceRecords: m.attendanceRecords.map(r => ({
+            attendanceRecords: m.attendanceRecords.map((r: any) => ({
               id: r.id,
               date: r.date,
               isPresent: r.isPresent,
@@ -226,7 +230,7 @@ export function getDatabase(): Database {
         },
         findMany: async (args?: any) => {
           const results = await prisma.team.findMany(args)
-          return results.map(t => ({
+          return results.map((t: any) => ({
             id: t.id,
             name: t.name,
             createdAt: t.createdAt,
@@ -267,7 +271,7 @@ export function getDatabase(): Database {
         },
         findMany: async () => {
           const results = await prisma.config.findMany()
-          return results.map(c => ({
+          return results.map((c: any) => ({
             id: c.id,
             key: c.key,
             value: c.value,
