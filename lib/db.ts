@@ -69,7 +69,7 @@ export type Database = {
   }
   team: {
     create: (args: { data: { name: string } }) => Promise<Team>
-    findMany: () => Promise<Team[]>
+    findMany: (args?: any) => Promise<any[]>
     update: (args: { where: { id: string }; data: Partial<Pick<Team, 'name'>> }) => Promise<Team | null>
   }
   config: {
