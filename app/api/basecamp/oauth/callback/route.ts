@@ -12,21 +12,22 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
     const error = searchParams.get('error')
+    const origin = new URL(request.url).origin
     
     if (error) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/todo?error=${error}`)
+      return NextResponse.redirect(`${origin}/todo?error=${error}`)
     }
     
     if (!code) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/todo?error=no_code`)
+      return NextResponse.redirect(`${origin}/todo?error=no_code`)
     }
     
     const clientId = process.env.BASECAMP_CLIENT_ID
     const clientSecret = process.env.BASECAMP_CLIENT_SECRET
-    const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/basecamp/oauth/callback`
+    const redirectUri = `${origin}/api/basecamp/oauth/callback`
     
     if (!clientId || !clientSecret) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/todo?error=missing_config`)
+      return NextResponse.redirect(`${origin}/todo?error=missing_config`)
     }
     
     // Exchange code for tokens
@@ -46,9 +47,10 @@ export async function GET(request: NextRequest) {
     })
     
     // Redirect back to todo page
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/todo?success=true`)
+    return NextResponse.redirect(`${origin}/todo?success=true`)
   } catch (error) {
     console.error('OAuth callback error:', error)
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/todo?error=oauth_failed`)
+    const origin = new URL(request.url).origin
+    return NextResponse.redirect(`${origin}/todo?error=oauth_failed`)
   }
 }
