@@ -9,7 +9,6 @@
 
 ```
 
-**Real-time attendance tracking & parts inventory for FRC teams**
 
 Combines AI-powered photo recognition, live dashboards, and team management—built for the fabrication floor.
 
