@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { processWhiteboardImage } from '@/lib/gemini'
 import { db } from '@/lib/db'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
