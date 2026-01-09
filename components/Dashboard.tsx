@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import AttendanceStats from './AttendanceStats'
 import Leaderboard from './Leaderboard'
 import PartsDisplay from './PartsDisplay'
+import TodoDisplay from './TodoDisplay'
 
 export default function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0)
@@ -122,6 +123,12 @@ export default function Dashboard() {
                 Attendance Upload
               </a>
               <a
+                href="/todo"
+                className="px-3 py-1.5 bg-gray-medium hover:bg-gray-light text-white text-sm font-semibold rounded transition-colors"
+              >
+                Weekly Goals
+              </a>
+              <a
                 href="/management"
                 className="px-3 py-1.5 bg-gray-medium hover:bg-gray-light text-white text-sm font-semibold rounded transition-colors"
               >
@@ -150,37 +157,39 @@ export default function Dashboard() {
       )}
 
       {/* Main content area with flex layout */}
-      <div className="flex-1 grid grid-rows-[auto_1fr] gap-2 min-h-0">
-        {/* Attendance Stats - Fixed height */}
-        <div className="h-[15vh] min-h-[120px] max-h-[180px]">
-          <AttendanceStats refreshKey={refreshKey} />
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1.5fr_1fr_2.5fr] gap-2 min-h-0">
+        {/* Left column - Attendance tiles stacked (4 tiles) */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-1 gap-2 min-h-0 overflow-hidden">
+          <Leaderboard
+            title="Attendance Overview"
+            type="overview"
+            refreshKey={refreshKey}
+          />
+          <Leaderboard
+            title="Longest Streaks"
+            type="streak"
+            refreshKey={refreshKey}
+          />
+          <Leaderboard
+            title="Most Days"
+            type="days"
+            refreshKey={refreshKey}
+          />
+          <Leaderboard
+            title="Best Attendance"
+            type="teamrate"
+            refreshKey={refreshKey}
+          />
         </div>
 
-        {/* Bottom section - 2 columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-2 min-h-0">
-          {/* Leaderboards - 3 columns in left section */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2 min-h-0 overflow-hidden">
-            <Leaderboard
-              title="Longest Streaks"
-              type="streak"
-              refreshKey={refreshKey}
-            />
-            <Leaderboard
-              title="Most Days"
-              type="days"
-              refreshKey={refreshKey}
-            />
-            <Leaderboard
-              title="Best Attendance"
-              type="teamrate"
-              refreshKey={refreshKey}
-            />
-          </div>
+        {/* Todo Display - Middle section, now full height */}
+        <div className="min-h-0 overflow-hidden">
+          <TodoDisplay refreshKey={refreshKey} />
+        </div>
 
-          {/* Parts Display - Right section */}
-          <div className="min-h-0 overflow-hidden">
-            <PartsDisplay refreshKey={refreshKey} />
-          </div>
+        {/* Parts Display - Right section, now full height */}
+        <div className="min-h-0 overflow-hidden">
+          <PartsDisplay refreshKey={refreshKey} />
         </div>
       </div>
     </div>

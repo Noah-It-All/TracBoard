@@ -35,6 +35,26 @@ interface ConfigItem {
   updatedAt: Date
 }
 
+interface WeeklyGoal {
+  id: string
+  weekStartDate: Date
+  basecampPostId?: string | null
+  basecampPostUrl?: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+interface Goal {
+  id: string
+  weeklyGoalId: string
+  title: string
+  description?: string | null
+  isCompleted: boolean
+  order: number
+  createdAt: Date
+  updatedAt: Date
+}
+
 export type Database = {
   teamMember: {
     findFirst: (args: { where: { name: { equals: string; mode: 'insensitive' } } }) => Promise<TeamMember | null>
@@ -78,6 +98,20 @@ export type Database = {
     findUnique: (args: { where: { key: string } }) => Promise<ConfigItem | null>
     findMany: (args?: any) => Promise<ConfigItem[]>
     delete: (args: { where: { key: string } }) => Promise<ConfigItem>
+  }
+  weeklyGoal: {
+    findUnique: (args: { where: { weekStartDate: Date } }) => Promise<WeeklyGoal | null>
+    findMany: (args?: { orderBy?: { weekStartDate: 'desc' | 'asc' } }) => Promise<WeeklyGoal[]>
+    create: (args: { data: { weekStartDate: Date; basecampPostId?: string; basecampPostUrl?: string } }) => Promise<WeeklyGoal>
+    update: (args: { where: { id: string }; data: Partial<Pick<WeeklyGoal, 'basecampPostId' | 'basecampPostUrl'>> }) => Promise<WeeklyGoal>
+    delete: (args: { where: { id: string } }) => Promise<WeeklyGoal>
+  }
+  goal: {
+    findMany: (args?: { where?: { weeklyGoalId: string }; orderBy?: { order: 'asc' | 'desc' } }) => Promise<Goal[]>
+    create: (args: { data: { weeklyGoalId: string; title: string; description?: string; order: number } }) => Promise<Goal>
+    update: (args: { where: { id: string }; data: Partial<Pick<Goal, 'title' | 'description' | 'isCompleted' | 'order'>> }) => Promise<Goal>
+    delete: (args: { where: { id: string } }) => Promise<Goal>
+    deleteMany: (args: { where: { weeklyGoalId: string } }) => Promise<{ count: number }>
   }
 }
 
@@ -301,6 +335,121 @@ export function getDatabase(): Database {
             createdAt: result.createdAt,
             updatedAt: result.updatedAt,
           }
+        },
+      },
+      weeklyGoal: {
+        findUnique: async (args) => {
+          const result = await prisma.weeklyGoal.findUnique(args)
+          return result ? {
+            id: result.id,
+            weekStartDate: result.weekStartDate,
+            basecampPostId: result.basecampPostId,
+            basecampPostUrl: result.basecampPostUrl,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          } : null
+        },
+        findMany: async (args?: any) => {
+          const results = await prisma.weeklyGoal.findMany(args)
+          return results.map((w: any) => ({
+            id: w.id,
+            weekStartDate: w.weekStartDate,
+            basecampPostId: w.basecampPostId,
+            basecampPostUrl: w.basecampPostUrl,
+            createdAt: w.createdAt,
+            updatedAt: w.updatedAt,
+          }))
+        },
+        create: async (args) => {
+          const result = await prisma.weeklyGoal.create(args)
+          return {
+            id: result.id,
+            weekStartDate: result.weekStartDate,
+            basecampPostId: result.basecampPostId,
+            basecampPostUrl: result.basecampPostUrl,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          }
+        },
+        update: async (args) => {
+          const result = await prisma.weeklyGoal.update(args)
+          return {
+            id: result.id,
+            weekStartDate: result.weekStartDate,
+            basecampPostId: result.basecampPostId,
+            basecampPostUrl: result.basecampPostUrl,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          }
+        },
+        delete: async (args) => {
+          const result = await prisma.weeklyGoal.delete(args)
+          return {
+            id: result.id,
+            weekStartDate: result.weekStartDate,
+            basecampPostId: result.basecampPostId,
+            basecampPostUrl: result.basecampPostUrl,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          }
+        },
+      },
+      goal: {
+        findMany: async (args?: any) => {
+          const results = await prisma.goal.findMany(args)
+          return results.map((g: any) => ({
+            id: g.id,
+            weeklyGoalId: g.weeklyGoalId,
+            title: g.title,
+            description: g.description,
+            isCompleted: g.isCompleted,
+            order: g.order,
+            createdAt: g.createdAt,
+            updatedAt: g.updatedAt,
+          }))
+        },
+        create: async (args) => {
+          const result = await prisma.goal.create(args)
+          return {
+            id: result.id,
+            weeklyGoalId: result.weeklyGoalId,
+            title: result.title,
+            description: result.description,
+            isCompleted: result.isCompleted,
+            order: result.order,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          }
+        },
+        update: async (args) => {
+          const result = await prisma.goal.update(args)
+          return {
+            id: result.id,
+            weeklyGoalId: result.weeklyGoalId,
+            title: result.title,
+            description: result.description,
+            isCompleted: result.isCompleted,
+            order: result.order,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          }
+        },
+        delete: async (args) => {
+          const result = await prisma.goal.delete(args)
+          return {
+            id: result.id,
+            weeklyGoalId: result.weeklyGoalId,
+            title: result.title,
+            description: result.description,
+            isCompleted: result.isCompleted,
+            order: result.order,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          }
+        },
+        deleteMany: async (args) => {
+          const result = await prisma.goal.deleteMany(args)
+          return { count: result.count }
         },
       },
     } as Database

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Trophy, Medal, Award } from 'lucide-react'
+import { Trophy, Medal, Award, Users, TrendingUp } from 'lucide-react'
 
 interface LeaderboardItem {
   id: string
@@ -14,13 +14,14 @@ interface LeaderboardItem {
 
 interface LeaderboardProps {
   title: string
-  type: 'streak' | 'days' | 'rate' | 'teamrate'
+  type: 'streak' | 'days' | 'rate' | 'teamrate' | 'overview'
   refreshKey: number
 }
 
 export default function Leaderboard({ title, type, refreshKey }: LeaderboardProps) {
   const [data, setData] = useState<LeaderboardItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [overviewStats, setOverviewStats] = useState<{ totalMembers: number; attendanceRate: number } | null>(null)
 
   useEffect(() => {
     let isMounted = true
@@ -34,18 +35,28 @@ export default function Leaderboard({ title, type, refreshKey }: LeaderboardProp
 
         if (!isMounted) return
 
-        let sorted: LeaderboardItem[] = []
-        if (type === 'streak') {
-          sorted = result.byStreak || []
-        } else if (type === 'days') {
-          sorted = result.byDaysPresent || []
-        } else if (type === 'teamrate') {
-          sorted = result.byTeamRate || []
+        if (type === 'overview') {
+          setOverviewStats({
+            totalMembers: result.all.length,
+            attendanceRate:
+              result.all.length > 0
+                ? result.all.reduce((sum: number, m: any) => sum + m.attendanceRate, 0) / result.all.length
+                : 0,
+          })
         } else {
-          sorted = result.byAttendanceRate || []
-        }
+          let sorted: LeaderboardItem[] = []
+          if (type === 'streak') {
+            sorted = result.byStreak || []
+          } else if (type === 'days') {
+            sorted = result.byDaysPresent || []
+          } else if (type === 'teamrate') {
+            sorted = result.byTeamRate || []
+          } else {
+            sorted = result.byAttendanceRate || []
+          }
 
-        setData(sorted.slice(0, 5)) // Top 5
+          setData(sorted.slice(0, 5)) // Top 5
+        }
       } catch (error) {
         console.error('Error fetching leaderboard:', error)
       } finally {
@@ -81,9 +92,48 @@ export default function Leaderboard({ title, type, refreshKey }: LeaderboardProp
       <div className="bg-gray-dark rounded-xl p-4 sm:p-6 border border-gray-medium">
         <div className="animate-pulse space-y-3">
           <div className="h-5 sm:h-6 bg-gray-medium rounded w-1/2"></div>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-14 sm:h-16 bg-gray-medium rounded-lg"></div>
-          ))}
+          {type === 'overview' ? (
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-16 bg-gray-medium rounded-lg"></div>
+              <div className="h-16 bg-gray-medium rounded-lg"></div>
+            </div>
+          ) : (
+            [1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-14 sm:h-16 bg-gray-medium rounded-lg"></div>
+            ))
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Render overview stats tile
+  if (type === 'overview') {
+    return (
+      <div className="bg-gray-dark rounded-lg p-2 sm:p-2.5 md:p-3 border border-gray-medium shadow-lg h-full flex flex-col">
+        <h2 className="text-base sm:text-lg font-bold mb-2 text-white flex-none">
+          {title}
+        </h2>
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 flex-1 min-h-0">
+          <div className="bg-gray-medium rounded-lg p-2 sm:p-3 border border-red-dark/30 hover:border-red-primary/50 transition-all duration-300 flex flex-col justify-between min-h-0">
+            <div className="flex items-center justify-between gap-2">
+              <div className="p-1 bg-red-primary/20 rounded">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-red-primary" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-200 flex-1 min-w-0 truncate">Total Members</h3>
+              <span className="text-xl sm:text-2xl font-bold text-white whitespace-nowrap leading-tight">{overviewStats?.totalMembers || 0}</span>
+            </div>
+          </div>
+
+          <div className="bg-gray-medium rounded-lg p-2 sm:p-3 border border-red-dark/30 hover:border-red-primary/50 transition-all duration-300 flex flex-col justify-between min-h-0">
+            <div className="flex items-center justify-between gap-2">
+              <div className="p-1 bg-red-primary/20 rounded">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-red-primary" />
+              </div>
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-200 flex-1 min-w-0 truncate">Avg. Attendance</h3>
+              <span className="text-xl sm:text-2xl font-bold text-white whitespace-nowrap leading-tight">{overviewStats?.attendanceRate.toFixed(1) || '0.0'}%</span>
+            </div>
+          </div>
         </div>
       </div>
     )

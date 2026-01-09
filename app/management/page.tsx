@@ -201,7 +201,29 @@ export default function ManagementPage() {
         <div className="bg-gray-dark p-4 rounded border border-gray-medium">
           <h2 className="text-xl font-semibold mb-3">Export Attendance</h2>
           <p className="text-sm text-gray-300 mb-3">Download all attendance records as CSV.</p>
-          <a href="/api/attendance/export" className="inline-block px-4 py-2 rounded bg-red-primary text-white">Download CSV</a>
+          <button 
+            onClick={async () => {
+              try {
+                const response = await fetch('/api/attendance/export');
+                if (!response.ok) throw new Error(`Export failed: ${response.statusText}`);
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `attendance_export_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+              } catch (error) {
+                console.error('Export error:', error);
+                alert('Failed to export attendance records. Please try again.');
+              }
+            }}
+            className="inline-block px-4 py-2 rounded bg-red-primary text-white hover:bg-red-dark transition-colors"
+          >
+            Download CSV
+          </button>
         </div>
       )}
     </div>
