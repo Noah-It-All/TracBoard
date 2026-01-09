@@ -35,6 +35,24 @@ export default function Dashboard() {
     }
   }, [boardMode])
 
+  // Ensure layout returns to normal when user exits fullscreen (e.g., ESC)
+  useEffect(() => {
+    const handleFsChange = () => {
+      const isFs = !!document.fullscreenElement
+      setBoardMode(isFs)
+    }
+    const doc = document as Document & { webkitOnfullscreenchange?: ((this: Document, ev: Event) => any) | null }
+    doc.onfullscreenchange = handleFsChange as any
+    // Some browsers may use webkit-prefixed handler
+    doc.webkitOnfullscreenchange = handleFsChange as any
+    return () => {
+      doc.onfullscreenchange = null
+      if ('webkitOnfullscreenchange' in doc) {
+        doc.webkitOnfullscreenchange = null
+      }
+    }
+  }, [])
+
   useEffect(() => {
     let active = true
     async function fetchTitle() {
@@ -60,9 +78,9 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen bg-black text-white overflow-hidden flex flex-col p-2 sm:p-3 md:p-4 lg:p-6">
-      <div className={boardMode ? "flex-1 flex items-center justify-center" : "flex-none"}>
+      <div className="flex-none">
         {/* Header */}
-        <div className={boardMode ? "w-full text-center" : "mb-2 flex flex-col gap-2"}>
+        <div className={boardMode ? "mb-2" : "mb-2 flex flex-col gap-2"}>
           {!boardMode && (
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
               <div>
@@ -77,8 +95,16 @@ export default function Dashboard() {
             </div>
           )}
           {boardMode && (
-            <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-gray-300 font-bold tracking-tight">
-              {formattedNow}
+            <div className="flex items-end justify-between">
+              <div>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">
+                  {title}
+                </h1>
+                <div className="h-2 w-28 sm:w-32 bg-red-primary mt-2"></div>
+              </div>
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-gray-300 font-bold tracking-tight">
+                {formattedNow}
+              </div>
             </div>
           )}
           {!boardMode && (
@@ -123,9 +149,8 @@ export default function Dashboard() {
         </div>
       )}
 
-      {!boardMode && (
-        /* Main content area with flex layout */
-        <div className="flex-1 grid grid-rows-[auto_1fr] gap-2 min-h-0">
+      {/* Main content area with flex layout */}
+      <div className="flex-1 grid grid-rows-[auto_1fr] gap-2 min-h-0">
         {/* Attendance Stats - Fixed height */}
         <div className="h-[15vh] min-h-[120px] max-h-[180px]">
           <AttendanceStats refreshKey={refreshKey} />
@@ -158,7 +183,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      )}
     </div>
   )
 }
