@@ -9,10 +9,14 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  outputFileTracing: true,
+  output: 'standalone',
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',
     },
+    // Disable static page generation for API routes
+    isrMemoryCacheSize: 0,
   },
 }
 

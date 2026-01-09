@@ -17,6 +17,11 @@ function toCsv(records: Array<{ date: Date; isPresent: boolean; teamMemberId: st
 }
 
 export async function GET() {
+  // Guard against build-time execution
+  if (typeof window !== 'undefined' || !process.env.DATABASE_URL) {
+    return NextResponse.json({ error: 'Not available during build' }, { status: 503 })
+  }
+  
   try {
     const records = await db.attendanceRecord.findMany({ orderBy: { date: 'asc' } })
     const members = await db.teamMember.findMany()
